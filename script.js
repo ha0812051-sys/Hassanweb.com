@@ -477,7 +477,7 @@ function showSection(sectionId) {
     const sections = document.querySelectorAll(".info-section");
 
     // Sab info sections hide
-    sections.forEach(function(section) {
+    sections.forEach(function (section) {
         section.classList.add("hidden");
     });
 
