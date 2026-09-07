@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="Hassan Browser - Search the web and quickly open websites.">
+
+    <meta name="author" content="Hassan">
+
+    <title>Hassan Browser</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- HEADER -->
+
+    <header>
+
+        <div class="brand">
+
+            <div class="h-logo">
+                H
+            </div>
+
+            <div>
+                <h2>
+                    Hassan <span>Browser</span>
+                </h2>
+
+                <small>
+                    Search • Explore • Connect
+                </small>
+            </div>
+
+        </div>
+
+
+        <nav>
+            <!--
+            <a href="#">⌂ Home</a>
+            <a href="#history">🕘 History</a>
+            <a href="#">ⓘ About</a>
+        --->
+            <!--
+            <a href="#">⌂ Home</a>
+            <a href="#history">🕘 History</a>
+            <a href="#about">ⓘ About</a>
+            <a href="#features">⭐ Features</a>
+            <a href="#contact">📩 Contact</a>
+
+        </nav>
+    -->
+            <nav>
+                <a href="#" onclick="showSection('home')">⌂ Home</a>
+                <a href="#history" onclick="showSection('history')">🕘 History</a>
+                <a href="#about" onclick="showSection('about')">ⓘ About</a>
+                <a href="#features" onclick="showSection('features')">⭐ Features</a>
+                <a href="#contact" onclick="showSection('contact')">📩 Contact</a>
+            </nav>
+    </header>
+
+
+
+    <!-- MAIN -->
+
+    <main>
+
+        <!-- PROFILE PHOTO -->
+
+        <img src="hassan.jpg" class="profile" alt="Hassan">
+
+
+        <h1>
+            Hassan
+        </h1>
+
+
+        <div class="search-title">
+            SEARCH
+        </div>
+
+
+        <p class="subtitle">
+            🔎 Search the web or open any website
+        </p>
+
+
+
+        <!-- SEARCH BOX -->
+
+        <div class="search-box">
+
+            <span class="search-icon">
+                🔍
+            </span>
+
+            <input type="text" id="website" placeholder="Type website or search..." autocomplete="off">
+
+            <button onclick="searchWeb()">
+                🔍 Search
+            </button>
+
+        </div>
+
+
+        <p class="hint">
+            Try: Google • YouTube • Facebook • TikTok • Instagram
+        </p>
+
+
+
+        <!-- QUICK WEBSITES -->
+
+        <div class="quick-links">
+            <a target="_blank" href="https://www.google.com">
+                <img src="google.png" alt="Google">
+
+                <button onclick="openSite('Google', 'https://www.google.com')">
+                    🌐
+                    <span>Google</span>
+                </button>
+
+
+                <button onclick="openSite('YouTube', 'https://www.youtube.com')">
+                    ▶️
+                    <span>YouTube</span>
+                </button>
+
+
+                <button onclick="openSite('Facebook', 'https://www.facebook.com')">
+                    f
+                    <span>Facebook</span>
+                </button>
+
+
+                <button onclick="openSite('TikTok', 'https://www.tiktok.com')">
+                    ♪
+                    <span>TikTok</span>
+                </button>
+
+
+                <button onclick="openSite('Instagram', 'https://www.instagram.com')">
+                    ◎
+                    <span>Instagram</span>
+                </button>
+
+
+                <button onclick="openSite('ChatGPT', 'https://chatgpt.com')">
+                    ◎
+                    <span>ChatGPT</span>
+                </button>
+
+
+                <button onclick="openSite('GitHub', 'https://github.com')">
+                    ●
+                    <span>GitHub</span>
+                </button>
+
+
+                <button onclick="openSite('Daraz', 'https://www.daraz.pk')">
+                    d
+                    <span>Daraz</span>
+                </button>
+
+
+                <button onclick="openSite('Netflix', 'https://www.netflix.com')">
+                    N
+                    <span>Netflix</span>
+                </button>
+
+        </div>
+
+
+
+        <!-- SEARCH HISTORY -->
+
+        <section class="history-section" id="history">
+
+            <div class="history-header">
+
+                <h2>
+                    🕘 Search History
+                </h2>
+
+                <button class="clear-btn" onclick="clearHistory()">
+                    🗑️ Clear All
+                </button>
+
+            </div>
+
+
+            <div id="historyList" class="history-list">
+                <!-- History JavaScript se yahan show hogi -->
+            </div>
+
+        </section>
+
+    </main>
+    <!-- 3 DOT MENU -->
+    <div class="menu-container">
+
+        <button class="menu-btn" onclick="toggleMenu()">⋮</button>
+
+        <div class="dropdown-menu" id="dropdownMenu">
+
+            <button onclick="showSection('aboutSection')">
+                ℹ️ About
+                <!-- ABOUT 
+
+    <section class="info-section" id="about">
+
+        <h2>About Hassan Browser</h2>
+
+        <p>
+            Hassan Browser is a simple and modern web search
+            and website navigation project created by Hassan.
+            It helps users quickly search the web and open
+            popular websites from one place.
+        </p>
+    -->
+            </button>
+
+            <button onclick="showSection('featuresSection')">
+                ⭐ Features
+                <!-- FEATURES 
+
+    <section class="info-section" id="features">
+
+        <h2>⭐ Features</h2>
+
+        <div class="features">
+
+            <div class="feature">
+                🔎
+                <h3>Web Search</h3>
+                <p>Search the web quickly using Hassan Browser.</p>
+            </div>
+
+            <div class="feature">
+                🌐
+                <h3>Open Websites</h3>
+                <p>Quickly open popular websites and URLs.</p>
+            </div>
+
+            <div class="feature">
+                🕘
+                <h3>Search History</h3>
+                <p>Your recent searches can be viewed easily.</p>
+            </div>
+
+            <div class="feature">
+                📱
+                <h3>Mobile Friendly</h3>
+                <p>Designed to work on mobile phones and computers.</p>
+            </div>
+
+        </div>
+    -->
+            </button>
+
+            <button onclick="showSection('contactSection')">
+                <!-- CONTACT 
+
+    <section class="info-section" id="contact">
+
+        <h2>📩 Contact</h2>
+
+        <p>
+            If you have any questions, suggestions or feedback
+            about Hassan Browser, you can contact us.
+        </p>
+
+        <a class="email-button" href="mailto:your-email@gmail.com">
+            📧 Contact Hassan
+        </a>
+
+    </section>
+                📞 Contact
+            </button>
+
+        </div>
+    </div>
+
+
+    <!-- ABOUT - FRONT PAR HIDDEN -->
+                <section id="aboutSection" class="info-section hidden-section">
+
+                    <h2>About Hassan Browser</h2>
+
+                    <p>
+                        Hassan Browser is a simple and modern web search and
+                        website navigation project created by Hassan.
+                        It helps users quickly search the web and open
+                        popular websites from one place.
+                    </p>
+
+                </section>
+
+
+                <!-- FEATURES - FRONT PAR HIDDEN -->
+                <section id="featuresSection" class="info-section hidden-section">
+
+                    <h2>⭐ Features</h2>
+
+                    <div class="features-grid">
+
+                        <div class="feature-card">
+                            <div class="feature-icon">🔎</div>
+                            <h3>Web Search</h3>
+                            <p>Search the web quickly using Hassan Browser.</p>
+                        </div>
+
+                        <div class="feature-card">
+                            <div class="feature-icon">🌐</div>
+                            <h3>Open Websites</h3>
+                            <p>Quickly open popular websites and URLs.</p>
+                        </div>
+
+                        <div class="feature-card">
+                            <div class="feature-icon">🕘</div>
+                            <h3>Search History</h3>
+                            <p>Your recent searches can be viewed easily.</p>
+                        </div>
+
+                        <div class="feature-card">
+                            <div class="feature-icon">📱</div>
+                            <h3>Mobile Friendly</h3>
+                            <p>Designed to work on mobile phones and computers.</p>
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- CONTACT -->
+                <section id="contactSection" class="info-section hidden-section">
+
+                    <h2>📞 Contact</h2>
+
+                    <p>You can contact Hassan Browser for more information.</p>
+
+                </section>
+                <!-- PRIVACY POLICY -->
+                <section class="info-section" id="privacy">
+                    <h2>🔒 Privacy Policy</h2>
+
+                    <p>
+                        Hassan Browser respects your privacy.
+                        We do not intentionally collect personal information
+                        through this website.
+                    </p>
+
+                    <p>
+                        Search history is stored locally in your browser
+                        and is not sent to our server.
+                    </p>
+                </section>
+
+
+                <!-- TERMS & CONDITIONS -->
+                <section class="info-section" id="terms">
+                    <h2>📄 Terms & Conditions</h2>
+
+                    <p>
+                        Hassan Browser is a web search and website navigation
+                        project created by Hassan.
+                    </p>
+
+                    <p>
+                        By using this website, you agree to use it responsibly
+                        and follow applicable laws.
+                    </p>
+                </section>
+                <footer>
+                    <div class="footer-links">
+                        <a href="#privacy">🔒 Privacy Policy</a>
+                        <a href="#terms">📄 Terms & Conditions</a>
+                        <a href="#contact">📩 Contact</a>
+                    </div>
+
+                    <p>Made with ❤️ by <b>Hassan</b></p>
+                    <p>© 2026 Hassan Browser. All rights reserved.</p>
+                </footer>
+
+
+
+                <!-- FOOTER -->
+                <!--
+
+                <footer>
+                    <div class="footer-links">
+                        <a href="#privacy">Privacy Policy</a>
+                        <a href="#terms">Terms & Conditions</a>
+                    </div>
+
+                    <span>
+                        
+            Made with ❤️ by <b>Hassan</b>
+        
+                    </span>
+
+                    <span>
+                        
+            © 2026 Hassan Browser
+        
+                    </span>
+
+                </footer>
+            -->
+
+
+
+                <script src="script.js"></script>
+
+</body>
+
+</html>
