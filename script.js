@@ -526,6 +526,16 @@ function showSection(sectionId) {
 
     dropdownMenu.classList.remove("show");
 }
+let input = searchInput.value.trim();
+
+if (/^(https?:\/\/)?\d{1,3}(\.\d{1,3}){3}(:\d+)?(\/.*)?$/.test(input)) {
+    if (!input.startsWith("http://") && !input.startsWith("https://")) {
+        input = "http://" + input;
+    }
+
+    window.location.href = input;
+    return;
+}
 
 
 /* =========================
