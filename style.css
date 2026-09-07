@@ -23,13 +23,11 @@ body {
     overflow-x: hidden;
 
     background:
-        linear-gradient(
-            135deg,
+        linear-gradient(135deg,
             #00111a,
             #002b36,
             #003f4a,
-            #001a2e
-        );
+            #001a2e);
 }
 
 
@@ -51,11 +49,9 @@ body {
     inset: 0;
 
     background:
-        radial-gradient(
-            circle at 50% 20%,
+        radial-gradient(circle at 50% 20%,
             rgba(0, 255, 255, 0.16),
-            transparent 40%
-        );
+            transparent 40%);
 
     animation: backgroundPulse 8s ease-in-out infinite alternate;
 }
@@ -158,12 +154,10 @@ body {
     font-weight: bold;
 
     background:
-        linear-gradient(
-            135deg,
+        linear-gradient(135deg,
             #00e5ff,
             #0077ff,
-            #00ffa3
-        );
+            #00ffa3);
 
     box-shadow:
         0 0 28px rgba(0, 229, 255, 0.55);
@@ -320,13 +314,11 @@ h1 {
     letter-spacing: -3px;
 
     background:
-        linear-gradient(
-            90deg,
+        linear-gradient(90deg,
             #ffffff,
             #00e5ff,
             #00aaff,
-            #00ffa3
-        );
+            #00ffa3);
 
     -webkit-background-clip: text;
     background-clip: text;
@@ -411,12 +403,10 @@ h1 span {
     border-radius: 30px;
 
     background:
-        linear-gradient(
-            90deg,
+        linear-gradient(90deg,
             #00e5ff,
             #0077ff,
-            #00ffa3
-        );
+            #00ffa3);
 
     color: #001014;
 
@@ -507,17 +497,15 @@ h1 span {
     border-radius: 13px;
 
     background:
-        linear-gradient(
-            135deg,
+        linear-gradient(135deg,
             rgba(0, 229, 255, 0.22),
-            rgba(0, 119, 255, 0.28)
-        );
+            rgba(0, 119, 255, 0.28));
 
     font-size: 20px;
     font-weight: bold;
 }
 
-.quick-links button > span:last-child {
+.quick-links button>span:last-child {
     display: block;
     font-size: 12px;
     color: #b7d5dc;
@@ -694,7 +682,7 @@ h1 span {
     background: rgba(0, 60, 75, 0.68);
 }
 
-.feature-card > div {
+.feature-card>div {
     font-size: 30px;
 }
 
@@ -857,7 +845,7 @@ footer p {
         font-size: 17px;
     }
 
-    .quick-links button > span:last-child {
+    .quick-links button>span:last-child {
         font-size: 10px;
     }
 
@@ -932,5 +920,63 @@ footer p {
     }
 }
 
-New theme: 🌊 Dark Teal + Cyan + Blue + Green
-Is mein background bhi change ho gaya hai aur logo, search button, menu, cards aur headings sab matching hain.
+/* =========================
+   SEPARATE MENU PAGE
+========================= */
+
+.info-section {
+    width: min(900px, calc(100% - 30px));
+    min-height: 500px;
+    margin: 80px auto 40px;
+
+    padding: 45px 30px;
+
+    border-radius: 25px;
+
+    text-align: center;
+
+    background: rgba(0, 25, 40, 0.92);
+
+    border: 1px solid rgba(0, 229, 255, 0.25);
+
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.45),
+        0 0 35px rgba(0, 229, 255, 0.08);
+
+    animation: infoPageShow 0.35s ease;
+}
+
+.info-section h2 {
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+.info-section p {
+    max-width: 700px;
+    margin: 12px auto;
+
+    line-height: 1.8;
+    font-size: 15px;
+}
+
+@keyframes infoPageShow {
+
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.hidden {
+    display: none !important;
+}
+
+New theme: 🌊 Dark Teal+Cyan+Blue+Green Is mein background bhi change ho gaya hai aur logo,
+search button,
+menu,
+cards aur headings sab matching hain.

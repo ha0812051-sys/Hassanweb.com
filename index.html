@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -41,7 +42,7 @@
             </button>
 
             <div class="dropdown-menu" id="dropdownMenu">
-
+                <!--
                 <button onclick="showSection('home')">
                     🏠 Home
                 </button>
@@ -69,9 +70,15 @@
                 <button onclick="showSection('termsSection')">
                     📄 Terms
                 </button>
-
+-->
+                <button onclick="showSection('home')">🏠 Home</button>
+                <button onclick="showSection('history')">🕘 History</button>
+                <button onclick="showSection('about')">About</button>
+                <button onclick="showSection('features')">Feature</button>
+                <button onclick="showSection('contact')">Contact</button>
+                <button onclick="showSection('privacy')">Privacy</button>
+                <button onclick="showSection('terms')">Term</button>
             </div>
-        </div>
 
     </header>
 
@@ -97,12 +104,7 @@
 
             <span class="search-icon">🔍</span>
 
-            <input
-                type="text"
-                id="website"
-                placeholder="Search the web or enter a URL..."
-                autocomplete="off"
-            >
+            <input type="text" id="website" placeholder="Search the web or enter a URL..." autocomplete="off">
 
             <button id="searchBtn">
                 Search
@@ -115,7 +117,7 @@
         </p>
 
 
-        <!-- QUICK LINKS -->
+        <!-- QUICK LINKS 
         <section class="quick-section">
 
             <h2>Quick Access</h2>
@@ -170,9 +172,10 @@
             </div>
 
         </section>
+        -->
 
 
-        <!-- HISTORY -->
+        <!-- HISTORY
         <section class="history-section" id="history">
 
             <div class="section-header">
@@ -191,6 +194,7 @@
             <div id="historyList" class="history-list"></div>
 
         </section>
+         -->
 
 
         <!-- ABOUT -->
@@ -319,4 +323,5 @@
     <script src="script.js"></script>
 
 </body>
+
 </html>

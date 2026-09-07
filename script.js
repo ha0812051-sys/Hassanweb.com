@@ -1,17 +1,143 @@
 /* =========================
    HASSAN BROWSER
-   SEARCH + HISTORY
+   MENU + SEARCH + HISTORY
 ========================= */
-
-
-/* HISTORY STORAGE */
 
 const HISTORY_KEY = "hassanBrowserHistory";
 
+const input = document.getElementById("website");
+const searchBtn = document.getElementById("searchBtn");
+const clearBtn = document.getElementById("clearBtn");
+
+const menuBtn = document.getElementById("menuBtn");
+const dropdownMenu = document.getElementById("dropdownMenu");
 
 
 /* =========================
-   GET HISTORY
+   3 DOT MENU
+========================= */
+
+menuBtn.addEventListener("click", function (event) {
+
+    event.stopPropagation();
+
+    dropdownMenu.classList.toggle("show");
+
+});
+
+
+/* Close menu when clicking outside */
+
+document.addEventListener("click", function (event) {
+
+    if (
+        !dropdownMenu.contains(event.target) &&
+        !menuBtn.contains(event.target)
+    ) {
+        dropdownMenu.classList.remove("show");
+    }
+
+});
+
+
+/* =========================
+   SHOW PAGE / SECTION
+========================= */
+
+function showSection(sectionId) {
+
+    const homePage = document.getElementById("home");
+    const historyPage = document.getElementById("history");
+
+    const infoSections =
+        document.querySelectorAll(".info-section");
+
+
+    /* Hide all information sections */
+
+    infoSections.forEach(function (section) {
+
+        section.classList.add("hidden");
+
+    });
+
+
+    /* =========================
+       HOME
+    ========================= */
+
+    if (sectionId === "home") {
+
+        homePage.style.display = "block";
+        historyPage.style.display = "block";
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+    }
+
+
+    /* =========================
+       HISTORY
+    ========================= */
+
+    else if (sectionId === "history") {
+
+        homePage.style.display = "block";
+        historyPage.style.display = "block";
+
+        historyPage.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+    }
+
+
+    /* =========================
+       ABOUT / FEATURES /
+       CONTACT / PRIVACY / TERMS
+    ========================= */
+
+    else {
+
+        /* Hide main Home content */
+
+        homePage.style.display = "none";
+        historyPage.style.display = "none";
+
+
+        /* Find selected section */
+
+        const selectedSection =
+            document.getElementById(sectionId);
+
+
+        if (selectedSection) {
+
+            selectedSection.classList.remove("hidden");
+
+            selectedSection.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+
+        }
+
+    }
+
+
+    /* Close 3-dot menu */
+
+    dropdownMenu.classList.remove("show");
+
+}
+
+
+/* =========================
+   HISTORY FUNCTIONS
 ========================= */
 
 function getHistory() {
@@ -24,40 +150,22 @@ function getHistory() {
     }
 
     try {
-
         return JSON.parse(saved);
+    }
 
-    } catch (error) {
-
+    catch (error) {
         return [];
     }
+
 }
 
-
-
-/* =========================
-   SAVE HISTORY
-========================= */
 
 function saveHistory(query, url) {
 
     let history = getHistory();
 
 
-    const item = {
-
-        query: query,
-
-        url: url,
-
-        time: new Date().toLocaleString()
-
-    };
-
-
-    /* Same search ko duplicate na karo */
-
-    history = history.filter(function(item) {
+    history = history.filter(function (item) {
 
         return item.query.toLowerCase()
             !== query.toLowerCase();
@@ -65,12 +173,16 @@ function saveHistory(query, url) {
     });
 
 
-    /* New item sab se upar */
+    history.unshift({
 
-    history.unshift(item);
+        query: query,
+        url: url,
+        time: new Date().toLocaleString()
+
+    });
 
 
-    /* Maximum 20 history items */
+    /* Keep last 20 searches */
 
     history = history.slice(0, 20);
 
@@ -81,23 +193,26 @@ function saveHistory(query, url) {
     );
 
 
-    showHistory();
+    displayHistory();
+
 }
 
 
-
 /* =========================
-   SHOW HISTORY
+   DISPLAY HISTORY
 ========================= */
 
-function showHistory() {
+function displayHistory() {
 
     const historyList =
         document.getElementById("historyList");
 
-    const history =
-        getHistory();
+    if (!historyList) {
+        return;
+    }
 
+
+    const history = getHistory();
 
     historyList.innerHTML = "";
 
@@ -106,7 +221,7 @@ function showHistory() {
 
         historyList.innerHTML = `
             <div class="empty-history">
-                🕘 No search history yet
+                🔎 No searches yet
             </div>
         `;
 
@@ -114,21 +229,20 @@ function showHistory() {
     }
 
 
+    history.forEach(function (item, index) {
 
-    history.forEach(function(item, index) {
-
-        const div =
+        const row =
             document.createElement("div");
 
-        div.className = "history-item";
+        row.className = "history-item";
 
 
-        div.innerHTML = `
+        row.innerHTML = `
 
             <div class="history-info">
 
                 <div class="history-query">
-                    🔎 ${escapeHTML(item.query)}
+                    ${escapeHTML(item.query)}
                 </div>
 
                 <div class="history-time">
@@ -137,221 +251,26 @@ function showHistory() {
 
             </div>
 
-
             <button
                 class="history-open"
-                onclick="openHistory(${index})"
-            >
-                Open
+                onclick="openHistory(${index})">
+                ↗
             </button>
-
 
             <button
                 class="history-delete"
-                onclick="deleteHistory(${index})"
-            >
-                ❌
+                onclick="deleteHistory(${index})">
+                🗑
             </button>
 
         `;
 
 
-        historyList.appendChild(div);
+        historyList.appendChild(row);
 
     });
-}
-
-
-
-/* =========================
-   SEARCH
-========================= */
-
-function searchWeb() {
-
-    const inputElement =
-        document.getElementById("website");
-
-
-    const input =
-        inputElement.value.trim();
-
-
-    if (input === "") {
-
-        inputElement.focus();
-
-        return;
-    }
-
-
-    const search =
-        input.toLowerCase();
-
-
-    let url;
-
-
-
-    /* GOOGLE */
-
-    if (search === "google") {
-
-        url =
-            "https://www.google.com";
-
-    }
-
-
-    /* YOUTUBE */
-
-    else if (search === "youtube") {
-
-        url =
-            "https://www.youtube.com";
-
-    }
-
-
-    /* FACEBOOK */
-
-    else if (search === "facebook") {
-
-        url =
-            "https://www.facebook.com";
-
-    }
-
-
-    /* INSTAGRAM */
-
-    else if (search === "instagram") {
-
-        url =
-            "https://www.instagram.com";
-
-    }
-
-
-    /* TIKTOK */
-
-    else if (search === "tiktok") {
-
-        url =
-            "https://www.tiktok.com";
-
-    }
-
-
-    /* GITHUB */
-
-    else if (search === "github") {
-
-        url =
-            "https://github.com";
-
-    }
-
-
-    /* CHATGPT */
-
-    else if (search === "chatgpt") {
-
-        url =
-            "https://chatgpt.com";
-
-    }
-
-
-    /* DARAZ */
-
-    else if (search === "daraz") {
-
-        url =
-            "https://www.daraz.pk";
-
-    }
-
-
-    /* NETFLIX */
-
-    else if (search === "netflix") {
-
-        url =
-            "https://www.netflix.com";
-
-    }
-
-
-    /* MY WEBSITE */
-
-    else if (search === "my website") {
-
-        url =
-            "https://example.com";
-
-    }
-
-
-    /* FULL URL */
-
-    else if (
-        search.startsWith("http://") ||
-        search.startsWith("https://")
-    ) {
-
-        url = input;
-
-    }
-
-
-    /* DOMAIN */
-
-    else if (input.includes(".")) {
-
-        url =
-            "https://" + input;
-
-    }
-
-
-    /* GOOGLE SEARCH */
-
-    else {
-
-        url =
-            "https://www.google.com/search?q=" +
-            encodeURIComponent(input);
-
-    }
-
-
-
-    /* SAVE HISTORY */
-
-    saveHistory(input, url);
-
-
-    /* OPEN WEBSITE */
-
-    window.location.href = url;
 
 }
-
-
-
-/* =========================
-   QUICK WEBSITE
-========================= */
-
-function openSite(name, url) {
-
-    saveHistory(name, url);
-
-    window.location.href = url;
-
-}
-
 
 
 /* =========================
@@ -360,90 +279,152 @@ function openSite(name, url) {
 
 function openHistory(index) {
 
-    const history =
-        getHistory();
+    const history = getHistory();
 
+    if (history[index]) {
 
-    if (!history[index]) {
-        return;
+        window.open(
+            history[index].url,
+            "_blank",
+            "noopener,noreferrer"
+        );
+
     }
 
-
-    window.location.href =
-        history[index].url;
 }
 
 
-
 /* =========================
-   DELETE ONE HISTORY
+   DELETE HISTORY
 ========================= */
 
 function deleteHistory(index) {
 
-    let history =
-        getHistory();
-
+    let history = getHistory();
 
     history.splice(index, 1);
-
 
     localStorage.setItem(
         HISTORY_KEY,
         JSON.stringify(history)
     );
 
+    displayHistory();
 
-    showHistory();
 }
 
 
-
 /* =========================
-   CLEAR ALL HISTORY
+   CLEAR HISTORY
 ========================= */
 
-function clearHistory() {
+if (clearBtn) {
 
-    const history =
-        getHistory();
+    clearBtn.addEventListener(
+        "click",
+        function () {
 
+            const history = getHistory();
 
-    if (history.length === 0) {
-        return;
-    }
-
-
-    const confirmDelete =
-        confirm(
-            "Are you sure you want to clear all search history?"
-        );
+            if (history.length === 0) {
+                return;
+            }
 
 
-    if (!confirmDelete) {
-        return;
-    }
+            if (confirm("Clear all search history?")) {
 
+                localStorage.removeItem(HISTORY_KEY);
 
-    localStorage.removeItem(
-        HISTORY_KEY
+                displayHistory();
+
+            }
+
+        }
     );
 
-
-    showHistory();
 }
 
 
-
 /* =========================
-   ENTER KEY
+   SEARCH
 ========================= */
 
-document
-    .getElementById("website")
-    .addEventListener(
+function searchWeb() {
+
+    const query =
+        input.value.trim();
+
+
+    if (!query) {
+
+        input.focus();
+
+        return;
+
+    }
+
+
+    let url;
+
+
+    if (
+        query.startsWith("http://") ||
+        query.startsWith("https://")
+    ) {
+
+        url = query;
+
+    }
+
+    else if (
+        query.includes(".") &&
+        !query.includes(" ")
+    ) {
+
+        url = "https://" + query;
+
+    }
+
+    else {
+
+        url =
+            "https://www.google.com/search?q=" +
+            encodeURIComponent(query);
+
+    }
+
+
+    saveHistory(query, url);
+
+
+    window.open(
+        url,
+        "_blank",
+        "noopener,noreferrer"
+    );
+
+}
+
+
+/* Search button */
+
+if (searchBtn) {
+
+    searchBtn.addEventListener(
+        "click",
+        searchWeb
+    );
+
+}
+
+
+/* Enter key */
+
+if (input) {
+
+    input.addEventListener(
         "keydown",
-        function(event) {
+        function (event) {
 
             if (event.key === "Enter") {
 
@@ -454,11 +435,28 @@ document
         }
     );
 
+}
+
+
+/* =========================
+   QUICK LINKS
+========================= */
+
+function openSite(name, url) {
+
+    saveHistory(name, url);
+
+    window.open(
+        url,
+        "_blank",
+        "noopener,noreferrer"
+    );
+
+}
 
 
 /* =========================
    SECURITY
-   HTML ESCAPE
 ========================= */
 
 function escapeHTML(text) {
@@ -469,30 +467,69 @@ function escapeHTML(text) {
     div.textContent = text;
 
     return div.innerHTML;
+
 }
+function showSection(sectionId) {
 
+    const home = document.getElementById("home");
+    const history = document.getElementById("history");
 
+    const sections = document.querySelectorAll(".info-section");
 
-/* =========================
-   LOAD HISTORY
-========================= */
+    // Sab info sections hide
+    sections.forEach(function(section) {
+        section.classList.add("hidden");
+    });
 
-showHistory();
-// =========================
-// CONTACT / INFO SECTIONS
-// =========================
+    // Home
+    if (sectionId === "home") {
 
-// Smooth scrolling for menu links
-document.querySelectorAll('nav a[href^="#"]').forEach(link => {
-    link.addEventListener("click", function (e) {
-        const target = document.querySelector(this.getAttribute("href"));
+        home.style.display = "block";
+        history.style.display = "block";
 
-        if (target) {
-            e.preventDefault();
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
 
-            target.scrollIntoView({
+    }
+
+    // History
+    else if (sectionId === "history") {
+
+        home.style.display = "block";
+        history.style.display = "block";
+
+        history.scrollIntoView({
+            behavior: "smooth"
+        });
+
+    }
+
+    // About / Features / Contact / Privacy / Terms
+    else {
+
+        home.style.display = "none";
+        history.style.display = "none";
+
+        const page = document.getElementById(sectionId);
+
+        if (page) {
+            page.classList.remove("hidden");
+
+            window.scrollTo({
+                top: 0,
                 behavior: "smooth"
             });
         }
-    });
-});
+    }
+
+    dropdownMenu.classList.remove("show");
+}
+
+
+/* =========================
+   START
+========================= */
+
+displayHistory();
