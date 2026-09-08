@@ -1,0 +1,19 @@
+{
+    "name": "Hassan Browser",
+    "short_name": "Hassan Browser",
+    "description": "A fast, private web search application.",
+    "start_url": "./index.html",
+    "scope": "./",
+    "display": "standalone",
+    "background_color": "#0b1220",
+    "theme_color": "#f59e0b",
+    "lang": "en",
+    "icons": [
+        {
+            "src": "icon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
+        }
+    ]
+}

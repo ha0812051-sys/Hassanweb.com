@@ -21,16 +21,21 @@ All visual design and responsive layout is handled by style.css.
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Hassan Browser — a secure, privacy-focused web search interface.">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta http-equiv="Content-Security-Policy"
-        content="default-src 'self'; base-uri 'none'; object-src 'none'; form-action 'self'; frame-ancestors 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; upgrade-insecure-requests">
+    content="default-src 'self'; base-uri 'none'; object-src 'none'; form-action 'self'; frame-ancestors 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; upgrade-insecure-requests">
   <title>Hassan Browser — Search the Web</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#f59e0b">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
   <div class="background" aria-hidden="true">
     <div class="orb orb-one"></div>
@@ -49,9 +54,10 @@ All visual design and responsive layout is handled by style.css.
     </a>
 
     <div class="menu-container">
-      <button class="menu-btn" id="menuBtn" type="button" aria-label="Open menu"
-              aria-expanded="false" aria-controls="dropdownMenu">⋮</button>
+      <button class="menu-btn" id="menuBtn" type="button" aria-label="Open menu" aria-expanded="false"
+        aria-controls="dropdownMenu">⋮</button>
       <nav class="dropdown-menu" id="dropdownMenu" aria-label="Main navigation">
+        <button class="install-btn" id="installBtn" type="button">Install Hassan Browser</button>
         <button type="button" data-section="home">⌂ Home</button>
         <button type="button" data-section="history">◷ History</button>
         <button type="button" data-section="aboutSection">About</button>
@@ -72,15 +78,13 @@ All visual design and responsive layout is handled by style.css.
     <!-- SEARCH ENGINE / SEARCH BOX -->
     <form class="search-box" id="searchForm" autocomplete="off">
       <span class="search-icon" aria-hidden="true">⌕</span>
-      <input id="website" name="q" type="search"
-             placeholder="Search the web or enter a URL..."
-             aria-label="Search the web or enter a URL"
-             maxlength="500" spellcheck="false" required>
+      <input id="website" name="q" type="search" placeholder="Search the web or enter a URL..."
+        aria-label="Search the web or enter a URL" maxlength="500" spellcheck="false" required>
       <select id="engine" aria-label="Search engine">
         <option value="google">Google</option>
-        <option value="bing">Bing</option>
+        <!-- <option value="bing">Bing</option> -->
         <option value="duckduckgo">DuckDuckGo</option>
-        <option value="brave">Brave Search</option>
+        <!--<option value="brave">Brave Search</option>-->
       </select>
       <button id="searchBtn" type="submit">Search</button>
     </form>
@@ -91,61 +95,87 @@ All visual design and responsive layout is handled by style.css.
     <section class="quick-section" aria-labelledby="quickTitle">
       <h2 id="quickTitle">Quick Access</h2>
       <div class="quick-links">
-        <button type="button" data-url="https://www.google.com/" data-name="Google"><span class="site-icon">G</span><span>Google</span></button>
-        <button type="button" data-url="https://www.youtube.com/" data-name="YouTube"><span class="site-icon">▶</span><span>YouTube</span></button>
-        <button type="button" data-url="https://www.facebook.com/" data-name="Facebook"><span class="site-icon">f</span><span>Facebook</span></button>
-        <button type="button" data-url="https://www.tiktok.com/" data-name="TikTok"><span class="site-icon">♪</span><span>TikTok</span></button>
-        <button type="button" data-url="https://www.instagram.com/" data-name="Instagram"><span class="site-icon">◎</span><span>Instagram</span></button>
-        <button type="button" data-url="https://chatgpt.com/" data-name="ChatGPT"><span class="site-icon">✦</span><span>ChatGPT</span></button>
-        <button type="button" data-url="https://github.com/" data-name="GitHub"><span class="site-icon">●</span><span>GitHub</span></button>
-        <button type="button" data-url="https://www.daraz.pk/" data-name="Daraz"><span class="site-icon">d</span><span>Daraz</span></button>
-        <button type="button" data-url="https://www.netflix.com/" data-name="Netflix"><span class="site-icon">N</span><span>Netflix</span></button>
+        <button type="button" data-url="https://www.google.com/" data-name="Google"><span
+            class="site-icon">G</span><span>Google</span></button>
+        <button type="button" data-url="https://www.youtube.com/" data-name="YouTube"><span
+            class="site-icon">▶</span><span>YouTube</span></button>
+        <button type="button" data-url="https://www.facebook.com/" data-name="Facebook"><span
+            class="site-icon">f</span><span>Facebook</span></button>
+        <button type="button" data-url="https://www.tiktok.com/" data-name="TikTok"><span
+            class="site-icon">♪</span><span>TikTok</span></button>
+        <button type="button" data-url="https://www.instagram.com/" data-name="Instagram"><span
+            class="site-icon">◎</span><span>Instagram</span></button>
+        <button type="button" data-url="https://chatgpt.com/" data-name="ChatGPT"><span
+            class="site-icon">✦</span><span>ChatGPT</span></button>
+        <button type="button" data-url="https://github.com/" data-name="GitHub"><span
+            class="site-icon">●</span><span>GitHub</span></button>
+        <button type="button" data-url="https://www.daraz.pk/" data-name="Daraz"><span
+            class="site-icon">d</span><span>Daraz</span></button>
+        <button type="button" data-url="https://www.netflix.com/" data-name="Netflix"><span
+            class="site-icon">N</span><span>Netflix</span></button>
       </div>
     </section>
 
     <!-- SEARCH HISTORY -->
-   <!---<section class="history-section" id="history" aria-labelledby="historyTitle"> -->
+    <section class="history-section" id="history" aria-labelledby="historyTitle">
       <div class="section-header">
         <div>
-          <!--
           <span class="section-label">YOUR ACTIVITY</span>
           <h2 id="historyTitle">◷ Search History</h2>
         </div>
         <button class="clear-btn" id="clearBtn" type="button">Clear</button>
       </div>
       <div id="historyList" class="history-list" aria-live="polite"></div>
-      -->
     </section>
 
     <!-- INFORMATION PAGES -->
     <section id="aboutSection" class="info-section hidden">
       <span class="section-label">ABOUT HASSAN</span>
       <h2>About Hassan Browser</h2>
-      <p>Hassan Browser is a lightweight search interface built around safe URL handling, provider selection and local-only history.</p>
+      <p>Hassan Browser is a lightweight search interface built around safe URL handling, provider selection and
+        local-only history.</p>
     </section>
 
     <section id="featuresSection" class="info-section hidden">
       <span class="section-label">WHAT WE OFFER</span>
       <h2>Features</h2>
       <div class="features-grid">
-        <div class="feature-card"><div>⌕</div><h3>Multi-Engine Search</h3><p>Choose between multiple established search providers.</p></div>
-        <div class="feature-card"><div>🔒</div><h3>Safer URLs</h3><p>Rejects dangerous URL schemes and malformed destinations.</p></div>
-        <div class="feature-card"><div>◷</div><h3>Local History</h3><p>History stays in this browser's local storage.</p></div>
-        <div class="feature-card"><div>⚡</div><h3>Fast Interface</h3><p>Simple client-side UI with no tracking backend.</p></div>
+        <div class="feature-card">
+          <div>⌕</div>
+          <h3>Multi-Engine Search</h3>
+          <p>Choose between multiple established search providers.</p>
+        </div>
+        <div class="feature-card">
+          <div>🔒</div>
+          <h3>Safer URLs</h3>
+          <p>Rejects dangerous URL schemes and malformed destinations.</p>
+        </div>
+        <div class="feature-card">
+          <div>◷</div>
+          <h3>Local History</h3>
+          <p>History stays in this browser's local storage.</p>
+        </div>
+        <div class="feature-card">
+          <div>⚡</div>
+          <h3>Fast Interface</h3>
+          <p>Simple client-side UI with no tracking backend.</p>
+        </div>
       </div>
     </section>
 
     <section id="privacySection" class="info-section hidden">
       <span class="section-label">YOUR PRIVACY</span>
       <h2>Privacy</h2>
-      <p>Hassan Browser does not operate a server-side search index in this version. Search requests go directly to the selected search provider.</p>
+      <p>Hassan Browser does not operate a server-side search index in this version. Search requests go directly to
+        the selected search provider.</p>
       <p>Search history is stored locally in your browser and can be cleared at any time.</p>
     </section>
 
     <section id="termsSection" class="info-section hidden">
       <span class="section-label">WEBSITE TERMS</span>
       <h2>Terms</h2>
-      <p>Use Hassan Browser responsibly and follow the terms and laws applicable to the websites and search providers you visit.</p>
+      <p>Use Hassan Browser responsibly and follow the terms and laws applicable to the websites and search
+        providers you visit.</p>
     </section>
   </main>
 
@@ -158,4 +188,5 @@ All visual design and responsive layout is handled by style.css.
 
   <script src="script.js" defer></script>
 </body>
+
 </html>
