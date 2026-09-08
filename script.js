@@ -1,536 +1,329 @@
-/* =========================
-   HASSAN BROWSER
-   MENU + SEARCH + HISTORY
-========================= */
+/* HISTORY HIDDEN ON HOME PAGE: history is intentionally not displayed on the main page. */
+/*
+============================================================
+Hassan Browser — JAVASCRIPT / FUNCTIONALITY FILE
+============================================================
+PURPOSE:
+This file controls all interactive functionality:
+- Search-engine selection
+- Web searching
+- Safe URL validation
+- Secure external links
+- Search history
+- Delete/clear history
+- Three-dot menu
+- About / Features / Privacy / Terms navigation
+- XSS-safe history rendering
+- LocalStorage handling
 
-const HISTORY_KEY = "hassanBrowserHistory";
+HTML:
+The UI elements controlled by this file are in index.html.
 
-const input = document.getElementById("website");
-const searchBtn = document.getElementById("searchBtn");
-const clearBtn = document.getElementById("clearBtn");
-
-const menuBtn = document.getElementById("menuBtn");
-const dropdownMenu = document.getElementById("dropdownMenu");
-
-
-/* =========================
-   3 DOT MENU
-========================= */
-
-menuBtn.addEventListener("click", function (event) {
-
-    event.stopPropagation();
-
-    dropdownMenu.classList.toggle("show");
-
-});
+CSS:
+The visual appearance is controlled by style.css.
+============================================================
+*/
 
 
-/* Close menu when clicking outside */
+(() => {
+  "use strict";
 
-document.addEventListener("click", function (event) {
+  const HISTORY_KEY = "Hassan BrowserHistory.v2";
+  const MAX_HISTORY = 30;
+  const MAX_QUERY_LENGTH = 500;
 
-    if (
-        !dropdownMenu.contains(event.target) &&
-        !menuBtn.contains(event.target)
-    ) {
-        dropdownMenu.classList.remove("show");
+  const $ = (selector, root = document) => root.querySelector(selector);
+  const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+
+  const input = $("#website");
+  const engine = $("#engine");
+  const form = $("#searchForm");
+  const clearBtn = $("#clearBtn");
+  const historyList = $("#historyList");
+  const menuBtn = $("#menuBtn");
+  const dropdownMenu = $("#dropdownMenu");
+
+  // ============================================================
+  // SEARCH ENGINE CONFIGURATION
+  // ============================================================
+  const SEARCH_ENGINES = Object.freeze({
+    google: q => `https://www.google.com/search?q=${encodeURIComponent(q)}`,
+    bing: q => `https://www.bing.com/search?q=${encodeURIComponent(q)}`,
+    duckduckgo: q => `https://duckduckgo.com/?q=${encodeURIComponent(q)}`,
+    brave: q => `https://search.brave.com/search?q=${encodeURIComponent(q)}`
+  });
+
+  const ALLOWED_PROTOCOLS = new Set(["http:", "https:"]);
+  const BLOCKED_SCHEMES = /^(javascript|data|vbscript|file|blob|about):/i;
+
+  // ============================================================
+  // SEARCH HISTORY — READ / WRITE / VALIDATE
+  // ============================================================
+  function getHistory() {
+    try {
+      const raw = localStorage.getItem(HISTORY_KEY);
+      if (!raw) return [];
+      const parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed)) return [];
+      return parsed
+        .filter(item =>
+          item &&
+          typeof item.query === "string" &&
+          typeof item.url === "string" &&
+          typeof item.time === "string" &&
+          isSafeUrl(item.url)
+        )
+        .slice(0, MAX_HISTORY);
+    } catch {
+      return [];
     }
+  }
 
-});
+  function setHistory(history) {
+    try {
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(history.slice(0, MAX_HISTORY)));
+    } catch {
+      // Storage can be disabled or full; search should still work.
+    }
+  }
 
-
-/* =========================
-   SHOW PAGE / SECTION
-========================= */
-
-function showSection(sectionId) {
-
-    const homePage = document.getElementById("home");
-    const historyPage = document.getElementById("history");
-
-    const infoSections =
-        document.querySelectorAll(".info-section");
-
-
-    /* Hide all information sections */
-
-    infoSections.forEach(function (section) {
-
-        section.classList.add("hidden");
-
+  function saveHistory(query, url) {
+    const history = getHistory().filter(item => item.query.toLowerCase() !== query.toLowerCase());
+    history.unshift({
+      query: query.slice(0, MAX_QUERY_LENGTH),
+      url,
+      time: new Date().toLocaleString()
     });
+    setHistory(history);
+    displayHistory();
+  }
 
-
-    /* =========================
-       HOME
-    ========================= */
-
-    if (sectionId === "home") {
-
-        homePage.style.display = "block";
-        historyPage.style.display = "block";
-
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth"
-        });
-
-    }
-
-
-    /* =========================
-       HISTORY
-    ========================= */
-
-    else if (sectionId === "history") {
-
-        homePage.style.display = "block";
-        historyPage.style.display = "block";
-
-        historyPage.scrollIntoView({
-            behavior: "smooth",
-            block: "start"
-        });
-
-    }
-
-
-    /* =========================
-       ABOUT / FEATURES /
-       CONTACT / PRIVACY / TERMS
-    ========================= */
-
-    else {
-
-        /* Hide main Home content */
-
-        homePage.style.display = "none";
-        historyPage.style.display = "none";
-
-
-        /* Find selected section */
-
-        const selectedSection =
-            document.getElementById(sectionId);
-
-
-        if (selectedSection) {
-
-            selectedSection.classList.remove("hidden");
-
-            selectedSection.scrollIntoView({
-                behavior: "smooth",
-                block: "start"
-            });
-
-        }
-
-    }
-
-
-    /* Close 3-dot menu */
-
-    dropdownMenu.classList.remove("show");
-
-}
-
-
-/* =========================
-   HISTORY FUNCTIONS
-========================= */
-
-function getHistory() {
-
-    const saved =
-        localStorage.getItem(HISTORY_KEY);
-
-    if (!saved) {
-        return [];
-    }
+  // ============================================================
+  // URL SECURITY — ONLY HTTP/HTTPS DESTINATIONS ARE ALLOWED
+  // ============================================================
+  function isSafeUrl(raw) {
+    if (typeof raw !== "string" || raw.length > 2048) return false;
+    const value = raw.trim();
+    if (!value || BLOCKED_SCHEMES.test(value)) return false;
 
     try {
-        return JSON.parse(saved);
+      const parsed = new URL(value);
+      if (!ALLOWED_PROTOCOLS.has(parsed.protocol)) return false;
+      if (parsed.username || parsed.password) return false;
+      return Boolean(parsed.hostname);
+    } catch {
+      return false;
+    }
+  }
+
+  function normalizeDestination(value) {
+    const query = value.trim();
+    if (!query || query.length > MAX_QUERY_LENGTH) return null;
+
+    // Explicit scheme: only HTTP(S) is accepted.
+    if (/^[a-z][a-z0-9+.-]*:/i.test(query)) {
+      return isSafeUrl(query) ? query : null;
     }
 
-    catch (error) {
-        return [];
+    // Looks like a hostname/domain: open over HTTPS.
+    if (/^(?:[a-z0-9-]+\.)+[a-z]{2,}(?::\d{1,5})?(?:[/?#].*)?$/i.test(query)) {
+      const url = `https://${query}`;
+      return isSafeUrl(url) ? url : null;
     }
 
-}
+    const selectedEngine = SEARCH_ENGINES[engine.value] || SEARCH_ENGINES.google;
+    return selectedEngine(query);
+  }
 
-
-function saveHistory(query, url) {
-
-    let history = getHistory();
-
-
-    history = history.filter(function (item) {
-
-        return item.query.toLowerCase()
-            !== query.toLowerCase();
-
-    });
-
-
-    history.unshift({
-
-        query: query,
-        url: url,
-        time: new Date().toLocaleString()
-
-    });
-
-
-    /* Keep last 20 searches */
-
-    history = history.slice(0, 20);
-
-
-    localStorage.setItem(
-        HISTORY_KEY,
-        JSON.stringify(history)
-    );
-
-
-    displayHistory();
-
-}
-
-
-/* =========================
-   DISPLAY HISTORY
-========================= */
-
-function displayHistory() {
-
-    const historyList =
-        document.getElementById("historyList");
-
-    if (!historyList) {
-        return;
+  function openExternal(url) {
+    if (!isSafeUrl(url)) return false;
+    const popup = window.open(url, "_blank", "noopener,noreferrer");
+    if (!popup) {
+      // Popup blockers can prevent the new tab. Navigating current tab is safer than
+      // silently doing nothing, but only after the URL has passed validation.
+      window.location.assign(url);
     }
+    return true;
+  }
 
-
-    const history = getHistory();
-
-    historyList.innerHTML = "";
-
-
-    if (history.length === 0) {
-
-        historyList.innerHTML = `
-            <div class="empty-history">
-                🔎 No searches yet
-            </div>
-        `;
-
-        return;
-    }
-
-
-    history.forEach(function (item, index) {
-
-        const row =
-            document.createElement("div");
-
-        row.className = "history-item";
-
-
-        row.innerHTML = `
-
-            <div class="history-info">
-
-                <div class="history-query">
-                    ${escapeHTML(item.query)}
-                </div>
-
-                <div class="history-time">
-                    ${escapeHTML(item.time)}
-                </div>
-
-            </div>
-
-            <button
-                class="history-open"
-                onclick="openHistory(${index})">
-                ↗
-            </button>
-
-            <button
-                class="history-delete"
-                onclick="deleteHistory(${index})">
-                🗑
-            </button>
-
-        `;
-
-
-        historyList.appendChild(row);
-
-    });
-
-}
-
-
-/* =========================
-   OPEN HISTORY
-========================= */
-
-function openHistory(index) {
-
-    const history = getHistory();
-
-    if (history[index]) {
-
-        window.open(
-            history[index].url,
-            "_blank",
-            "noopener,noreferrer"
-        );
-
-    }
-
-}
-
-
-/* =========================
-   DELETE HISTORY
-========================= */
-
-function deleteHistory(index) {
-
-    let history = getHistory();
-
-    history.splice(index, 1);
-
-    localStorage.setItem(
-        HISTORY_KEY,
-        JSON.stringify(history)
-    );
-
-    displayHistory();
-
-}
-
-
-/* =========================
-   CLEAR HISTORY
-========================= */
-
-if (clearBtn) {
-
-    clearBtn.addEventListener(
-        "click",
-        function () {
-
-            const history = getHistory();
-
-            if (history.length === 0) {
-                return;
-            }
-
-
-            if (confirm("Clear all search history?")) {
-
-                localStorage.removeItem(HISTORY_KEY);
-
-                displayHistory();
-
-            }
-
-        }
-    );
-
-}
-
-
-/* =========================
-   SEARCH
-========================= */
-
-function searchWeb() {
-
-    const query =
-        input.value.trim();
-
-
+  // ============================================================
+  // MAIN SEARCH FUNCTION
+  // ============================================================
+  function searchWeb() {
+    const query = input.value.trim();
     if (!query) {
-
-        input.focus();
-
-        return;
-
+      input.focus();
+      return;
     }
 
-
-    let url;
-
-
-    if (
-        query.startsWith("http://") ||
-        query.startsWith("https://")
-    ) {
-
-        url = query;
-
+    if (query.length > MAX_QUERY_LENGTH) {
+      input.value = query.slice(0, MAX_QUERY_LENGTH);
+      return;
     }
 
-    else if (
-        query.includes(".") &&
-        !query.includes(" ")
-    ) {
-
-        url = "https://" + query;
-
+    const url = normalizeDestination(query);
+    if (!url) {
+      input.setCustomValidity("This URL is not allowed. Use an http:// or https:// address.");
+      input.reportValidity();
+      input.setCustomValidity("");
+      return;
     }
-
-    else {
-
-        url =
-            "https://www.google.com/search?q=" +
-            encodeURIComponent(query);
-
-    }
-
 
     saveHistory(query, url);
+    openExternal(url);
+  }
 
+  // ============================================================
+  // DISPLAY HISTORY SAFELY — NO UNSAFE HTML INJECTION
+  // ============================================================
+  function displayHistory() {
+    if (!historyList) return;
 
-    window.open(
-        url,
-        "_blank",
-        "noopener,noreferrer"
-    );
+    historyList.replaceChildren();
+    const history = getHistory();
 
-}
+    if (!history.length) {
+      const empty = document.createElement("div");
+      empty.className = "empty-history";
+      empty.textContent = "⌕ No searches yet";
+      historyList.appendChild(empty);
+      return;
+    }
 
+    history.forEach((item, index) => {
+      const row = document.createElement("div");
+      row.className = "history-item";
 
-/* Search button */
+      const info = document.createElement("div");
+      info.className = "history-info";
 
-if (searchBtn) {
+      const query = document.createElement("div");
+      query.className = "history-query";
+      query.textContent = item.query;
 
-    searchBtn.addEventListener(
-        "click",
-        searchWeb
-    );
+      const time = document.createElement("div");
+      time.className = "history-time";
+      time.textContent = item.time;
 
-}
+      info.append(query, time);
 
+      const open = document.createElement("button");
+      open.className = "history-open";
+      open.type = "button";
+      open.textContent = "↗";
+      open.setAttribute("aria-label", `Open ${item.query}`);
+      open.addEventListener("click", () => openHistory(index));
 
-/* Enter key */
+      const del = document.createElement("button");
+      del.className = "history-delete";
+      del.type = "button";
+      del.textContent = "🗑";
+      del.setAttribute("aria-label", `Delete ${item.query}`);
+      del.addEventListener("click", () => deleteHistory(index));
 
-if (input) {
-
-    input.addEventListener(
-        "keydown",
-        function (event) {
-
-            if (event.key === "Enter") {
-
-                searchWeb();
-
-            }
-
-        }
-    );
-
-}
-
-
-/* =========================
-   QUICK LINKS
-========================= */
-
-function openSite(name, url) {
-
-    saveHistory(name, url);
-
-    window.open(
-        url,
-        "_blank",
-        "noopener,noreferrer"
-    );
-
-}
-
-
-/* =========================
-   SECURITY
-========================= */
-
-function escapeHTML(text) {
-
-    const div =
-        document.createElement("div");
-
-    div.textContent = text;
-
-    return div.innerHTML;
-
-}
-function showSection(sectionId) {
-
-    const home = document.getElementById("home");
-    const history = document.getElementById("history");
-
-    const sections = document.querySelectorAll(".info-section");
-
-    // Sab info sections hide
-    sections.forEach(function (section) {
-        section.classList.add("hidden");
+      row.append(info, open, del);
+      historyList.appendChild(row);
     });
+  }
 
-    // Home
+  function openHistory(index) {
+    const item = getHistory()[index];
+    if (item) openExternal(item.url);
+  }
+
+  function deleteHistory(index) {
+    const history = getHistory();
+    if (!history[index]) return;
+    history.splice(index, 1);
+    setHistory(history);
+    displayHistory();
+  }
+
+  function clearHistory() {
+    if (!getHistory().length) return;
+    if (window.confirm("Clear all search history?")) {
+      try { localStorage.removeItem(HISTORY_KEY); } catch {}
+      displayHistory();
+    }
+  }
+
+  // ============================================================
+  // MENU / PAGE SECTION NAVIGATION
+  // ============================================================
+  function showSection(sectionId) {
+    const home = $("#home");
+    if (!home) return;
+
+    const sections = $$(".info-section");
+    sections.forEach(section => section.classList.add("hidden"));
+
     if (sectionId === "home") {
-
-        home.style.display = "block";
-        history.style.display = "block";
-
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth"
-        });
-
+      home.style.display = "";
+      $("#history")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else if (sectionId === "history") {
+      home.style.display = "";
+      $("#history")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+      home.style.display = "block";
+      const page = document.getElementById(sectionId);
+      if (page) {
+        // Hide the regular home content while showing an info page.
+        sections.forEach(section => section.classList.add("hidden"));
+        page.classList.remove("hidden");
+        page.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
     }
 
-    // History
-    else if (sectionId === "history") {
+    closeMenu();
+  }
 
-        home.style.display = "block";
-        history.style.display = "block";
+  function closeMenu() {
+    dropdownMenu?.classList.remove("show");
+    menuBtn?.setAttribute("aria-expanded", "false");
+  }
 
-        history.scrollIntoView({
-            behavior: "smooth"
-        });
+  menuBtn?.addEventListener("click", event => {
+    event.stopPropagation();
+    const show = !dropdownMenu.classList.contains("show");
+    dropdownMenu.classList.toggle("show", show);
+    menuBtn.setAttribute("aria-expanded", String(show));
+  });
 
+  document.addEventListener("click", event => {
+    if (dropdownMenu && menuBtn &&
+        !dropdownMenu.contains(event.target) &&
+        !menuBtn.contains(event.target)) {
+      closeMenu();
     }
+  });
 
-    // About / Features / Contact / Privacy / Terms
-    else {
+  $$("#dropdownMenu [data-section]").forEach(button => {
+    button.addEventListener("click", () => showSection(button.dataset.section));
+  });
 
-        home.style.display = "none";
-        history.style.display = "none";
+  $$(".quick-links [data-url]").forEach(button => {
+    button.addEventListener("click", () => {
+      const url = button.dataset.url;
+      const name = button.dataset.name || url;
+      if (isSafeUrl(url)) {
+        saveHistory(name, url);
+        openExternal(url);
+      }
+    });
+  });
 
-        const page = document.getElementById(sectionId);
+  form?.addEventListener("submit", event => {
+    event.preventDefault();
+    searchWeb();
+  });
 
-        if (page) {
-            page.classList.remove("hidden");
+  clearBtn?.addEventListener("click", clearHistory);
 
-            window.scrollTo({
-                top: 0,
-                behavior: "smooth"
-            });
-        }
-    }
+  // If the page is opened from a fragment, show the relevant section.
+  const hash = location.hash.slice(1);
+  if (["history", "aboutSection", "featuresSection", "privacySection", "termsSection"].includes(hash)) {
+    showSection(hash);
+  }
 
-    dropdownMenu.classList.remove("show");
-}
-
-
-
-/* =========================
-   START
-========================= */
-
-displayHistory();
+  displayHistory();
+})();

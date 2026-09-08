@@ -1,327 +1,161 @@
+<!--
+============================================================
+Hassan Browser — MAIN HTML FILE
+============================================================
+PURPOSE:
+This file contains the complete website structure/UI:
+- Header and navigation menu
+- Search box and search-engine selector
+- Quick-access website buttons
+- Search history section
+- About / Features / Privacy / Terms sections
+- Footer
+
+JAVASCRIPT:
+Search, history, navigation and security logic is handled by script.js.
+
+STYLING:
+All visual design and responsive layout is handled by style.css.
+============================================================
+-->
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <meta name="description"
-        content="Hassan Browser - Explore the web with a fast and modern browser-style search experience.">
-
-    <title>Hassan Browser — Explore the Web</title>
-
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Hassan Browser — a secure, privacy-focused web search interface.">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; base-uri 'none'; object-src 'none'; form-action 'self'; frame-ancestors 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; upgrade-insecure-requests">
+  <title>Hassan Browser — Search the Web</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
+  <div class="background" aria-hidden="true">
+    <div class="orb orb-one"></div>
+    <div class="orb orb-two"></div>
+    <div class="orb orb-three"></div>
+  </div>
 
-    <!-- Animated Background -->
-    <div class="background">
-        <div class="orb orb-one"></div>
-        <div class="orb orb-two"></div>
-        <div class="orb orb-three"></div>
+  <!-- HEADER / BRAND / MENU -->
+  <header class="header">
+    <a class="brand" href="#home" aria-label="Hassan Browser home">
+      <div class="logo" aria-hidden="true">H</div>
+      <div class="brand-text">
+        <h2>Hassan <span>Browser</span></h2>
+        <small> Web Search</small>
+      </div>
+    </a>
+
+    <div class="menu-container">
+      <button class="menu-btn" id="menuBtn" type="button" aria-label="Open menu"
+              aria-expanded="false" aria-controls="dropdownMenu">⋮</button>
+      <nav class="dropdown-menu" id="dropdownMenu" aria-label="Main navigation">
+        <button type="button" data-section="home">⌂ Home</button>
+        <button type="button" data-section="history">◷ History</button>
+        <button type="button" data-section="aboutSection">About</button>
+        <button type="button" data-section="featuresSection">Features</button>
+        <button type="button" data-section="privacySection">Privacy</button>
+        <button type="button" data-section="termsSection">Terms</button>
+      </nav>
     </div>
+  </header>
 
-    <!-- HEADER -->
-    <header class="header">
+  <main id="home">
+    <div class="hero-badge">FAST • PRIVATE • MODERN</div>
+    <h1>Search the <span>Web</span></h1>
+    <p class="subtitle">
+      Search with your preferred provider, or securely open a website directly.
+    </p>
 
-        <div class="brand">
-            <div class="logo">H</div>
+    <!-- SEARCH ENGINE / SEARCH BOX -->
+    <form class="search-box" id="searchForm" autocomplete="off">
+      <span class="search-icon" aria-hidden="true">⌕</span>
+      <input id="website" name="q" type="search"
+             placeholder="Search the web or enter a URL..."
+             aria-label="Search the web or enter a URL"
+             maxlength="500" spellcheck="false" required>
+      <select id="engine" aria-label="Search engine">
+        <option value="google">Google</option>
+        <option value="bing">Bing</option>
+        <option value="duckduckgo">DuckDuckGo</option>
+        <option value="brave">Brave Search</option>
+      </select>
+      <button id="searchBtn" type="submit">Search</button>
+    </form>
 
-            <div class="brand-text">
-                <h2>Hassan <span>Browser</span></h2>
-                <small>Explore the Web</small>
-            </div>
+    <p class="hint">Press Enter to search. URLs are validated before opening.</p>
+
+    <!-- QUICK ACCESS WEBSITES -->
+    <section class="quick-section" aria-labelledby="quickTitle">
+      <h2 id="quickTitle">Quick Access</h2>
+      <div class="quick-links">
+        <button type="button" data-url="https://www.google.com/" data-name="Google"><span class="site-icon">G</span><span>Google</span></button>
+        <button type="button" data-url="https://www.youtube.com/" data-name="YouTube"><span class="site-icon">▶</span><span>YouTube</span></button>
+        <button type="button" data-url="https://www.facebook.com/" data-name="Facebook"><span class="site-icon">f</span><span>Facebook</span></button>
+        <button type="button" data-url="https://www.tiktok.com/" data-name="TikTok"><span class="site-icon">♪</span><span>TikTok</span></button>
+        <button type="button" data-url="https://www.instagram.com/" data-name="Instagram"><span class="site-icon">◎</span><span>Instagram</span></button>
+        <button type="button" data-url="https://chatgpt.com/" data-name="ChatGPT"><span class="site-icon">✦</span><span>ChatGPT</span></button>
+        <button type="button" data-url="https://github.com/" data-name="GitHub"><span class="site-icon">●</span><span>GitHub</span></button>
+        <button type="button" data-url="https://www.daraz.pk/" data-name="Daraz"><span class="site-icon">d</span><span>Daraz</span></button>
+        <button type="button" data-url="https://www.netflix.com/" data-name="Netflix"><span class="site-icon">N</span><span>Netflix</span></button>
+      </div>
+    </section>
+
+    <!-- SEARCH HISTORY -->
+   <!---<section class="history-section" id="history" aria-labelledby="historyTitle"> -->
+      <div class="section-header">
+        <div>
+          <!--
+          <span class="section-label">YOUR ACTIVITY</span>
+          <h2 id="historyTitle">◷ Search History</h2>
         </div>
-
-        <!-- 3 DOT MENU -->
-        <div class="menu-container">
-
-            <button class="menu-btn" id="menuBtn" aria-label="Open menu">
-                ⋮
-            </button>
-
-            <div class="dropdown-menu" id="dropdownMenu">
-                <!--
-                <button onclick="showSection('home')">
-                    🏠 Home
-                </button>
-
-                <button onclick="showSection('history')">
-                    🕘 History
-                </button>
-
-                <button onclick="showSection('aboutSection')">
-                    ℹ️ About
-                </button>
-
-                <button onclick="showSection('featuresSection')">
-                    ⭐ Features
-                </button>
-
-                <button onclick="showSection('contactSection')">
-                    📩 Contact
-                </button>
-
-                <button onclick="showSection('privacySection')">
-                    🔒 Privacy
-                </button>
-
-                <button onclick="showSection('termsSection')">
-                    📄 Terms
-                </button>
--->
-                <button onclick="showSection('home')">🏠 Home</button>
-                <button onclick="showSection('history')">🕘 History</button>
-                <button onclick="showSection('about')">About</button>
-                <button onclick="showSection('features')">Feature</button>
-                <button onclick="showSection('contact')">Contact</button>
-                <button onclick="showSection('privacy')">Privacy</button>
-                <button onclick="showSection('terms')">Term</button>
-            </div>
-
-    </header>
-
-
-    <!-- MAIN -->
-    <main id="home">
-
-        <div class="hero-badge">
-            ✨ FAST • SIMPLE • MODERN
-        </div>
-
-        <h1>
-            Explore the <span>Web</span>
-        </h1>
-
-        <p class="subtitle">
-            Search the web or open any website from one place.
-        </p>
-
-
-        <!-- SEARCH -->
-        <div class="search-box">
-
-            <span class="search-icon">🔍</span>
-
-            <input type="text" id="website" placeholder="Search the web or enter a URL..." autocomplete="off">
-
-            <button id="searchBtn">
-                Search
-            </button>
-
-        </div>
-
-        <p class="hint">
-            Try Google, YouTube, Facebook, TikTok or enter any website URL.
-        </p>
-
-
-        <!-- QUICK LINKS 
-        <section class="quick-section">
-
-            <h2>Quick Access</h2>
-
-            <div class="quick-links">
-
-                <button onclick="openSite('Google','https://www.google.com')">
-                    <span class="site-icon">G</span>
-                    <span>Google</span>
-                </button>
-
-                <button onclick="openSite('YouTube','https://www.youtube.com')">
-                    <span class="site-icon">▶</span>
-                    <span>YouTube</span>
-                </button>
-
-                <button onclick="openSite('Facebook','https://www.facebook.com')">
-                    <span class="site-icon">f</span>
-                    <span>Facebook</span>
-                </button>
-
-                <button onclick="openSite('TikTok','https://www.tiktok.com')">
-                    <span class="site-icon">♪</span>
-                    <span>TikTok</span>
-                </button>
-
-                <button onclick="openSite('Instagram','https://www.instagram.com')">
-                    <span class="site-icon">◎</span>
-                    <span>Instagram</span>
-                </button>
-
-                <button onclick="openSite('ChatGPT','https://chatgpt.com')">
-                    <span class="site-icon">✦</span>
-                    <span>ChatGPT</span>
-                </button>
-
-                <button onclick="openSite('GitHub','https://github.com')">
-                    <span class="site-icon">●</span>
-                    <span>GitHub</span>
-                </button>
-
-                <button onclick="openSite('Daraz','https://www.daraz.pk')">
-                    <span class="site-icon">d</span>
-                    <span>Daraz</span>
-                </button>
-
-                <button onclick="openSite('Netflix','https://www.netflix.com')">
-                    <span class="site-icon">N</span>
-                    <span>Netflix</span>
-                </button>
-
-            </div>
-
-        </section>
-        -->
-
-
-        <!-- HISTORY
-        <section class="history-section" id="history">
-
-            <div class="section-header">
-
-                <div>
-                    <span class="section-label">YOUR ACTIVITY</span>
-                    <h2>🕘 Search History</h2>
-                </div>
-
-                <button class="clear-btn" id="clearBtn">
-                    🗑️ Clear
-                </button>
-
-            </div>
-
-            <div id="historyList" class="history-list"></div>
-
-        </section>
-         -->
-
-
-        <!-- ABOUT -->
-        <section id="aboutSection" class="info-section hidden">
-
-            <span class="section-label">ABOUT HASSAN BROWSER</span>
-
-            <h2>About Hassan Browser</h2>
-
-            <p>
-                Hassan Browser is a simple, modern browser-style web project
-                designed to help users search the web and quickly open
-                popular websites from one place.
-            </p>
-
-        </section>
-
-
-        <!-- FEATURES -->
-        <section id="featuresSection" class="info-section hidden">
-
-            <span class="section-label">WHAT WE OFFER</span>
-
-            <h2>⭐ Features</h2>
-
-            <div class="features-grid">
-
-                <div class="feature-card">
-                    <div>🔎</div>
-                    <h3>Web Search</h3>
-                    <p>Search the web quickly and easily.</p>
-                </div>
-
-                <div class="feature-card">
-                    <div>🌐</div>
-                    <h3>Quick Websites</h3>
-                    <p>Open popular websites with one click.</p>
-                </div>
-
-                <div class="feature-card">
-                    <div>🕘</div>
-                    <h3>Search History</h3>
-                    <p>Keep your recent searches locally.</p>
-                </div>
-
-                <div class="feature-card">
-                    <div>📱</div>
-                    <h3>Responsive</h3>
-                    <p>Works on phones, tablets and computers.</p>
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- CONTACT -->
-        <section id="contactSection" class="info-section hidden">
-
-            <span class="section-label">GET IN TOUCH</span>
-
-            <h2>📩 Contact</h2>
-
-            <p>
-                Have a suggestion or feedback about Hassan Browser?
-                We'd love to hear from you.
-            </p>
-
-        </section>
-
-
-        <!-- PRIVACY -->
-        <section id="privacySection" class="info-section hidden">
-
-            <span class="section-label">YOUR PRIVACY</span>
-
-            <h2>🔒 Privacy Policy</h2>
-
-            <p>
-                Hassan Browser does not intentionally collect personal
-                information through this website.
-            </p>
-
-            <p>
-                Search history is stored locally in your browser
-                using local storage.
-            </p>
-
-        </section>
-
-
-        <!-- TERMS -->
-        <section id="termsSection" class="info-section hidden">
-
-            <span class="section-label">WEBSITE TERMS</span>
-
-            <h2>📄 Terms & Conditions</h2>
-
-            <p>
-                Hassan Browser is a browser-style web project.
-                Users should use the website responsibly and
-                follow applicable laws.
-            </p>
-
-        </section>
-
-    </main>
-
-
-    <!-- FOOTER -->
-    <footer>
-
-        <div class="footer-logo">
-            Hassan <span>Browser</span>
-        </div>
-
-        <p>Explore the Web • Fast • Simple • Modern</p>
-
-        <p>
-            © 2026 Hassan Browser. All rights reserved.
-        </p>
-
-    </footer>
-
-
-    <script src="script.js"></script>
-
+        <button class="clear-btn" id="clearBtn" type="button">Clear</button>
+      </div>
+      <div id="historyList" class="history-list" aria-live="polite"></div>
+      -->
+    </section>
+
+    <!-- INFORMATION PAGES -->
+    <section id="aboutSection" class="info-section hidden">
+      <span class="section-label">ABOUT HASSAN</span>
+      <h2>About Hassan Browser</h2>
+      <p>Hassan Browser is a lightweight search interface built around safe URL handling, provider selection and local-only history.</p>
+    </section>
+
+    <section id="featuresSection" class="info-section hidden">
+      <span class="section-label">WHAT WE OFFER</span>
+      <h2>Features</h2>
+      <div class="features-grid">
+        <div class="feature-card"><div>⌕</div><h3>Multi-Engine Search</h3><p>Choose between multiple established search providers.</p></div>
+        <div class="feature-card"><div>🔒</div><h3>Safer URLs</h3><p>Rejects dangerous URL schemes and malformed destinations.</p></div>
+        <div class="feature-card"><div>◷</div><h3>Local History</h3><p>History stays in this browser's local storage.</p></div>
+        <div class="feature-card"><div>⚡</div><h3>Fast Interface</h3><p>Simple client-side UI with no tracking backend.</p></div>
+      </div>
+    </section>
+
+    <section id="privacySection" class="info-section hidden">
+      <span class="section-label">YOUR PRIVACY</span>
+      <h2>Privacy</h2>
+      <p>Hassan Browser does not operate a server-side search index in this version. Search requests go directly to the selected search provider.</p>
+      <p>Search history is stored locally in your browser and can be cleared at any time.</p>
+    </section>
+
+    <section id="termsSection" class="info-section hidden">
+      <span class="section-label">WEBSITE TERMS</span>
+      <h2>Terms</h2>
+      <p>Use Hassan Browser responsibly and follow the terms and laws applicable to the websites and search providers you visit.</p>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">Hassan <span>Browser</span></div>
+    <p>Explore the Web • Fast • Private • Modern</p>
+    <p>© 2026 Hassan Browser. All rights reserved.</p>
+  </footer>
+
+  <script src="script.js" defer></script>
 </body>
-
 </html>
