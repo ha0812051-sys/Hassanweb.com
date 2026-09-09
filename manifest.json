@@ -10,9 +10,9 @@
     "lang": "en",
     "icons": [
         {
-            "src": "icon.svg",
+            "src": "image.jpg",
             "sizes": "any",
-            "type": "image/svg+xml",
+            "type": "image/jpeg",
             "purpose": "any maskable"
         }
     ]

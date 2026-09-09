@@ -66,6 +66,10 @@ button {
     cursor: pointer;
 }
 
+.hidden {
+    display: none !important;
+}
+
 a {
     color: inherit;
     text-decoration: none;
@@ -407,6 +411,10 @@ body.history-view #history {
 }
 
 body.history-view main#home> :not(#history) {
+    display: none;
+}
+
+body.info-view main#home> :not(.info-section) {
     display: none;
 }
 

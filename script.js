@@ -260,6 +260,7 @@ The visual appearance is controlled by style.css.
     const sections = $$(".info-section");
     sections.forEach(section => section.classList.add("hidden"));
     document.body.classList.remove("history-view");
+    document.body.classList.remove("info-view");
 
     if (sectionId === "home") {
       home.style.display = "";
@@ -270,6 +271,7 @@ The visual appearance is controlled by style.css.
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
       home.style.display = "block";
+      document.body.classList.add("info-view");
       const page = document.getElementById(sectionId);
       if (page) {
         // Hide the regular home content while showing an info page.
