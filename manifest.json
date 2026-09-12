@@ -1,6 +1,7 @@
 {
     "name": "Hassan Browser",
-    "short_name": "Hassan Browser",
+    "short_name": "Hassan",
+    "id": "./index.html",
     "description": "A fast, private web search application.",
     "start_url": "./index.html",
     "scope": "./",
@@ -10,9 +11,9 @@
     "lang": "en",
     "icons": [
         {
-            "src": "image.jpg",
+            "src": "icon.svg",
             "sizes": "any",
-            "type": "image/jpeg",
+            "type": "image/svg+xml",
             "purpose": "any maskable"
         }
     ]

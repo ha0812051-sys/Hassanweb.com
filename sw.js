@@ -1,11 +1,11 @@
-const CACHE_NAME = "hassan-browser-v2";
+const CACHE_NAME = "hassan-browser-v3";
 const APP_SHELL = [
     "./",
     "./index.html",
     "./style.css",
     "./script.js",
     "./manifest.json",
-    "./image.jpg"
+    "./icon.svg"
 ];
 
 self.addEventListener("install", event => {

@@ -43,8 +43,28 @@ The visual appearance is controlled by style.css.
   const menuBtn = $("#menuBtn");
   const dropdownMenu = $("#dropdownMenu");
   const installBtn = $("#installBtn");
+  const accountArea = $("#accountArea");
+  const signInBtn = $("#signInBtn");
+  const createAccountBtn = $("#createAccountBtn");
+  const authBackdrop = $("#authBackdrop");
+  const authCloseBtn = $("#authCloseBtn");
+  const authForm = $("#authForm");
+  const authName = $("#authName");
+  const authNameLabel = $("#authNameLabel");
+  const authEmail = $("#authEmail");
+  const authPassword = $("#authPassword");
+  const authTitle = $("#authTitle");
+  const authSubtitle = $("#authSubtitle");
+  const authSubmit = $("#authSubmit");
+  const authMessage = $("#authMessage");
+  const signInTab = $("#signInTab");
+  const createAccountTab = $("#createAccountTab");
+
+  const ACCOUNT_KEY = "HassanBrowserAccount.v1";
+  const SESSION_KEY = "HassanBrowserSession.v1";
 
   let deferredInstallPrompt;
+  let authMode = "signin";
 
   // ============================================================
   // SEARCH ENGINE CONFIGURATION
@@ -58,6 +78,139 @@ The visual appearance is controlled by style.css.
 
   const ALLOWED_PROTOCOLS = new Set(["http:", "https:"]);
   const BLOCKED_SCHEMES = /^(javascript|data|vbscript|file|blob|about):/i;
+
+  function setAuthMode(mode) {
+    authMode = mode;
+    const isCreate = mode === "create";
+    authTitle.textContent = isCreate ? "Create your account" : "Welcome back";
+    authSubtitle.textContent = isCreate
+      ? "Create a local account to keep your browser data connected."
+      : "Sign in to keep your browser data connected.";
+    authName.hidden = !isCreate;
+    authNameLabel.hidden = !isCreate;
+    authName.required = isCreate;
+    authPassword.autocomplete = isCreate ? "new-password" : "current-password";
+    authSubmit.textContent = isCreate ? "Create account" : "Sign in";
+    signInTab.classList.toggle("active", !isCreate);
+    createAccountTab.classList.toggle("active", isCreate);
+    signInTab.setAttribute("aria-selected", String(!isCreate));
+    createAccountTab.setAttribute("aria-selected", String(isCreate));
+    authMessage.textContent = "";
+    authMessage.className = "auth-message";
+  }
+
+  function openAuth(mode = "signin") {
+    setAuthMode(mode);
+    authBackdrop.hidden = false;
+    document.body.classList.add("auth-open");
+    (mode === "create" ? authName : authEmail).focus();
+  }
+
+  function closeAuth() {
+    authBackdrop.hidden = true;
+    document.body.classList.remove("auth-open");
+    authForm.reset();
+    authMessage.textContent = "";
+  }
+
+  function getStoredAccount() {
+    try {
+      return JSON.parse(localStorage.getItem(ACCOUNT_KEY) || "null");
+    } catch {
+      return null;
+    }
+  }
+
+  function getSession() {
+    try {
+      return JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
+    } catch {
+      return null;
+    }
+  }
+
+  async function hashPassword(password) {
+    if (!window.crypto?.subtle) throw new Error("Secure password storage is unavailable.");
+    const bytes = new TextEncoder().encode(password);
+    const digest = await crypto.subtle.digest("SHA-256", bytes);
+    return [...new Uint8Array(digest)].map(byte => byte.toString(16).padStart(2, "0")).join("");
+  }
+
+  function renderAccount() {
+    if (!accountArea) return;
+    const session = getSession();
+    accountArea.replaceChildren();
+    if (!session) {
+      const signIn = document.createElement("button");
+      signIn.className = "auth-btn auth-btn-secondary";
+      signIn.type = "button";
+      signIn.textContent = "Sign in";
+      signIn.addEventListener("click", () => openAuth("signin"));
+      const create = document.createElement("button");
+      create.className = "auth-btn auth-btn-primary";
+      create.type = "button";
+      create.textContent = "Create account";
+      create.addEventListener("click", () => openAuth("create"));
+      accountArea.append(signIn, create);
+      return;
+    }
+    const welcome = document.createElement("span");
+    welcome.className = "account-name";
+    welcome.textContent = `Hi, ${session.name}`;
+    const signOut = document.createElement("button");
+    signOut.className = "auth-btn auth-btn-secondary";
+    signOut.type = "button";
+    signOut.textContent = "Sign out";
+    signOut.addEventListener("click", () => {
+      localStorage.removeItem(SESSION_KEY);
+      renderAccount();
+    });
+    accountArea.append(welcome, signOut);
+  }
+
+  signInBtn?.addEventListener("click", () => openAuth("signin"));
+  createAccountBtn?.addEventListener("click", () => openAuth("create"));
+  authCloseBtn?.addEventListener("click", closeAuth);
+  signInTab?.addEventListener("click", () => setAuthMode("signin"));
+  createAccountTab?.addEventListener("click", () => setAuthMode("create"));
+  authBackdrop?.addEventListener("click", event => {
+    if (event.target === authBackdrop) closeAuth();
+  });
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape" && authBackdrop && !authBackdrop.hidden) closeAuth();
+  });
+
+  authForm?.addEventListener("submit", async event => {
+    event.preventDefault();
+    const email = authEmail.value.trim().toLowerCase();
+    const password = authPassword.value;
+    authSubmit.disabled = true;
+    try {
+      const passwordHash = await hashPassword(password);
+      if (authMode === "create") {
+        const name = authName.value.trim();
+        localStorage.setItem(ACCOUNT_KEY, JSON.stringify({ name, email, passwordHash }));
+        localStorage.setItem(SESSION_KEY, JSON.stringify({ name, email }));
+        authMessage.textContent = "Account created. You are now signed in.";
+        authMessage.className = "auth-message success";
+      } else {
+        const account = getStoredAccount();
+        if (!account || account.email !== email || account.passwordHash !== passwordHash) {
+          throw new Error("Email or password is incorrect. Create an account first if needed.");
+        }
+        localStorage.setItem(SESSION_KEY, JSON.stringify({ name: account.name, email: account.email }));
+        authMessage.textContent = `Welcome back, ${account.name}.`;
+        authMessage.className = "auth-message success";
+      }
+      renderAccount();
+      window.setTimeout(closeAuth, 700);
+    } catch (error) {
+      authMessage.textContent = error.message || "Unable to save the account in this browser.";
+      authMessage.className = "auth-message error";
+    } finally {
+      authSubmit.disabled = false;
+    }
+  });
 
   // ============================================================
   // SEARCH HISTORY — READ / WRITE / VALIDATE
@@ -260,7 +413,6 @@ The visual appearance is controlled by style.css.
     const sections = $$(".info-section");
     sections.forEach(section => section.classList.add("hidden"));
     document.body.classList.remove("history-view");
-    document.body.classList.remove("info-view");
 
     if (sectionId === "home") {
       home.style.display = "";
@@ -271,7 +423,6 @@ The visual appearance is controlled by style.css.
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
       home.style.display = "block";
-      document.body.classList.add("info-view");
       const page = document.getElementById(sectionId);
       if (page) {
         // Hide the regular home content while showing an info page.
@@ -360,5 +511,6 @@ The visual appearance is controlled by style.css.
     showSection(hash);
   }
 
+  renderAccount();
   displayHistory();
 })();
