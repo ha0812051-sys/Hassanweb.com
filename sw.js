@@ -1,4 +1,4 @@
-const CACHE_NAME = "hassan-browser-v2";
+const CACHE_NAME = "hassan-browser-v3";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -31,13 +31,27 @@ self.addEventListener("activate", event => {
 self.addEventListener("fetch", event => {
   if (event.request.method !== "GET") return;
 
+  const requestUrl = new URL(event.request.url);
+
+  // Only handle same-origin requests. Never cache Google/Bing/etc.
+  if (requestUrl.origin !== self.location.origin) return;
+
   event.respondWith(
     caches.match(event.request).then(cached => {
-      return cached || fetch(event.request).then(response => {
-        const copy = response.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
+      if (cached) return cached;
+
+      return fetch(event.request).then(response => {
+        if (response && response.ok) {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
+        }
         return response;
-      }).catch(() => caches.match("./index.html"));
+      }).catch(() => {
+        if (event.request.mode === "navigate") {
+          return caches.match("./index.html");
+        }
+        return Response.error();
+      });
     })
   );
 });

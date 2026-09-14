@@ -1,8 +1,8 @@
 (() => {
   "use strict";
 
-  const HISTORY_KEY = "hassanBrowserHistory.v3";
-  const SETTINGS_KEY = "hassanBrowserSettings.v2";
+  const HISTORY_KEY = "hassanBrowserHistory.v4";
+  const SETTINGS_KEY = "hassanBrowserSettings.v3";
   const MAX_HISTORY = 30;
   const MAX_QUERY_LENGTH = 500;
 
@@ -77,8 +77,9 @@
 
   function openExternal(url) {
     if (!isSafeUrl(url)) return false;
-    const popup = window.open(url, "_blank", "noopener,noreferrer");
-    if (!popup) window.location.assign(url);
+    // Use a normal browser navigation so Chrome does not treat the destination
+    // as a search query and popup blockers cannot interrupt the action.
+    window.location.href = url;
     return true;
   }
 
@@ -345,7 +346,7 @@
 // PWA Service Worker
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./sw.js")
+    navigator.serviceWorker.register(new URL("./sw.js", document.baseURI), { scope: new URL("./", document.baseURI).pathname })
       .then(() => console.log("Hassan Browser: Service Worker registered"))
       .catch(error => console.error("Service Worker registration failed:", error));
   });
